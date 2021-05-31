@@ -1,0 +1,109 @@
+body {
+  font: 20px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+  background:rgb(231, 153, 255);
+  color:white;
+  font-weight:bold;
+}
+
+.game{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
+}
+.square {
+  background: rgb(242,251,239);
+  border: 1px solid #999;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  color:rgb(79,0,70);
+  text-align: center;
+}
+
+.squarePintado{ 
+  background: rgb(79,0,70);
+}
+
+.square:focus {
+  outline: none;
+}
+
+.board {
+  display: grid;
+}
+
+.horizontal {
+  display: flex;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowClues {
+  display: grid;
+}
+
+.colClues {
+  display: grid;
+}
+
+.clue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(61,0,8);
+  border-radius: 8px;
+  margin: 5px;
+}
+
+.clueSatisfies{
+  background: rgb(188,0,221);
+}
+.clue div {
+  margin: 2px
+}
+
+.colClues .clue {
+  flex-direction: column;
+}
+
+.gameInfo {
+  margin-left: 0px;
+}
+
+.mode{
+  margin-top:20px;
+  height: 30px;
+  width: 30px;
+  margin-left: 50px;
+  color: rgb(79,0,70);
+  font-size:24px;
+  font-weight:bold;
+  border: none;
+}
+
+.pintar{
+  background: rgb(79,0,70);
+}
+
+.restart{
+  width:50px;
+  height:53px;
+  background-color: rgb(231, 153, 255);
+  background-image: url(/src/restart.png);
+  border: 0px;
+}
+
+.div{
+  height: 50px;
+}
+
+.modo{
+  margin: 1% 0;
+}
