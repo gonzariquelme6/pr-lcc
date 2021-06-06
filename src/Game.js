@@ -3,6 +3,8 @@ import PengineClient from './PengineClient';
 import Board from './Board';
 import Mode from './Mode';
 import Restart from './Restart';
+import Hint from './Hint';
+import Solution from './Solution';
 
 class Game extends React.Component {
 
@@ -20,6 +22,7 @@ class Game extends React.Component {
       filasCorrectas:[],
       colsCorrectas:[],
       statusText:null,
+      solution:null,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -40,6 +43,7 @@ class Game extends React.Component {
         });
       //llamamos al metodo auxiliar checkInicio que sirve para verificar si las celdas pintadas iniciales verifican alguna pista
       this.checkInicio();
+      //this.solveBoard();
       }
     });
   }
@@ -61,6 +65,25 @@ class Game extends React.Component {
       }  
     });
   }
+
+  /*solveBoard(){
+    const pistasf = JSON.stringify(this.state.rowClues);
+    const pistasc = JSON.stringify(this.state.colClues);
+    const cantF = this.state.rowClues.length();
+    const cantC = this.state.colClues.length();
+
+    //llamamos al metodo de prolog 
+    const queryS = ``;
+    //y usamos la respuesta para inicializar la grilla resuelta
+    this.pengine.query(queryS,(success, response) =>{
+      if (success){
+        this.setState({
+          solution: response['Grilla'],
+        })
+      }  
+    });
+
+  }*/
 
   handleClick(i, j) {
     // Si esta esperando, o el jugador gano y no clickeo en reiniciar juego no hago nada.
@@ -127,6 +150,18 @@ class Game extends React.Component {
   }
 
 
+  getHint(i,j){
+    // Si esta esperando, o el jugador gano y no clickeo en reiniciar juego no hago nada.
+    if (this.state.waiting || this.state.won) {
+      return;
+    }
+    return this.state.solution[i][j];
+  }
+  
+  showSolution(){
+
+  }
+
   render() {
     if (this.state.grid === null) {
       return null;
@@ -143,17 +178,30 @@ class Game extends React.Component {
           colSat = {this.state.colsCorrectas}
         />
 
-        <div className="div modo">
-          Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
-        </div>
+        <div className="bottom">
+            <div className="izq">
+              <div className="div modo">
+                Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
+              </div>
 
-        <div className="div">
-          {this.state.statusText}
-        </div>
+              <div className="div">
+                {this.state.statusText}
+              </div>
 
-        <div className="div">
-          <Restart onClick={() => this.handlePengineCreate()} />
-        </div>
+              <div className="div">
+                <Restart onClick={() => this.handlePengineCreate()} />
+              </div>
+            </div>
+            <div className="der">
+                <div>
+                  <Hint onClick={(i,j) => this.getHint(i,j)}/>
+                </div>
+                <div>
+                  <Solution onClick={() => this.showSolution()}/>
+                </div>
+            </div>
+          </div>
+              
       </div>
     );
   }

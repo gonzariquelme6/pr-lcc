@@ -107,3 +107,15 @@ body {
 .modo{
   margin: 1% 0;
 }
+
+.bottom{
+  display: grid;
+}
+
+.izq{
+  grid-column: 1;
+}
+
+.der{
+  grid-column: 2;
+}
