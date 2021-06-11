@@ -79,24 +79,23 @@ body {
 
 .mode{
   margin-top:20px;
-  height: 30px;
-  width: 30px;
+  height: 50px;
+  width: 50px;
   margin-left: 50px;
-  color: rgb(79,0,70);
-  font-size:24px;
-  font-weight:bold;
   border: none;
+  background-color: rgb(231, 153, 255);
+  background-image: url(/src/img/x.png);
 }
 
 .pintar{
-  background: rgb(79,0,70);
+  background-image: url(/src/img/paint.png);
 }
 
 .restart{
   width:50px;
-  height:53px;
+  height:50px;
   background-color: rgb(231, 153, 255);
-  background-image: url(/src/restart.png);
+  background-image: url(/src/img/restart.png);
   border: 0px;
 }
 
@@ -105,17 +104,44 @@ body {
 }
 
 .modo{
-  margin: 1% 0;
+  margin-top: 1%;
+  margin-bottom: 20px;
 }
 
 .bottom{
   display: grid;
 }
 
-.izq{
+.uno{
   grid-column: 1;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.der{
+.dos{
   grid-column: 2;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.tres{
+  grid-column: 3;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.hint{
+  width:50px;
+  height:50px;
+  background-color: rgb(231, 153, 255);
+  background-image: url(/src/img/hint.png);
+  border: 0px;
+}
+
+.solution{
+  width:50px;
+  height:50px;
+  background-color: rgb(231, 153, 255);
+  background-image: url(/src/img/solve.png);
+  border: 0px;
 }

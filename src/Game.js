@@ -22,7 +22,10 @@ class Game extends React.Component {
       filasCorrectas:[],
       colsCorrectas:[],
       statusText:null,
-      solution:null,
+      gridSolution:null,
+      help:false,
+      solve:false,
+      gridAux:null,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -43,7 +46,7 @@ class Game extends React.Component {
         });
       //llamamos al metodo auxiliar checkInicio que sirve para verificar si las celdas pintadas iniciales verifican alguna pista
       this.checkInicio();
-      //this.solveBoard();
+      this.solveBoard();
       }
     });
   }
@@ -66,24 +69,22 @@ class Game extends React.Component {
     });
   }
 
-  /*solveBoard(){
+  solveBoard(){
     const pistasf = JSON.stringify(this.state.rowClues);
     const pistasc = JSON.stringify(this.state.colClues);
-    const cantF = this.state.rowClues.length();
-    const cantC = this.state.colClues.length();
+    const grilla = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); 
 
     //llamamos al metodo de prolog 
-    const queryS = ``;
+    const queryS = `solve(${pistasf},${pistasc},${grilla}, GRes)`;
     //y usamos la respuesta para inicializar la grilla resuelta
     this.pengine.query(queryS,(success, response) =>{
       if (success){
         this.setState({
-          solution: response['Grilla'],
+          gridSolution: response['GRes'],
         })
       }  
     });
-
-  }*/
+  }
 
   handleClick(i, j) {
     // Si esta esperando, o el jugador gano y no clickeo en reiniciar juego no hago nada.
@@ -91,53 +92,62 @@ class Game extends React.Component {
       return;
     }
 
-    const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
-    const filas = JSON.stringify(this.state.rowClues);
-    const columnas = JSON.stringify(this.state.colClues);
-    
-    //llamamos al metodo put de prolog y usamos su respuesta para actualizar las pistas correctas
-    const queryS = `put("${this.state.current_mode}", [${i}, ${j}], ${filas}, ${columnas}, ${squaresS}, GrillaRes, FilaSat, ColSat)`;
-    
-    this.setState({
-      waiting: true
-    });
-    
-    this.pengine.query(queryS, (success, response) => {
-      //copiamos los arreglos actuales filasCorrectas y colsCorrectas a variables auxiliares
-
-      let auxFilas = this.state.filasCorrectas.slice();
-      let auxCols = this.state.colsCorrectas.slice();
-      if (success) {
-        //usamos la respuesta de prolog para actualizar los arreglos auxiliares
-        auxFilas[i] = response['FilaSat'];
-        auxCols[j] = response['ColSat'];
-        
-        this.setState({
-          //uso la respuesta de prolog para actualizar el estado actual de la grilla y reemplazo los arreglos
-          //actuales de filasCorrectas y colsCorrectas por los arreglos auxiliares que ya modifique
-          grid: response['GrillaRes'],
-          waiting: false,
-          filasCorrectas:auxFilas,
-          colsCorrectas:auxCols
-        });
-
-        //control por React de que ej jugador gano
-        //si todas las filas y todas las columnas son correctas gano el juego
-        let todasFilas = this.state.filasCorrectas.every(elem=> elem===1);
-        let todasCols = this.state.colsCorrectas.every(elem=> elem===1);
-
-        if(todasFilas&&todasCols){
+    if (this.state.help){
+      console.log(this.state.help);
+      let gridHelp  = this.state.grid.slice();
+      gridHelp[i][j] = this.state.gridSolution[i][j];
+      this.setState({
+        grid: gridHelp
+      })
+    }else{
+      const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
+      const filas = JSON.stringify(this.state.rowClues);
+      const columnas = JSON.stringify(this.state.colClues);
+      
+      //llamamos al metodo put de prolog y usamos su respuesta para actualizar las pistas correctas
+      const queryS = `put("${this.state.current_mode}", [${i}, ${j}], ${filas}, ${columnas}, ${squaresS}, GrillaRes, FilaSat, ColSat)`;
+      
+      this.setState({
+        waiting: true
+      });
+      
+      this.pengine.query(queryS, (success, response) => {
+        //copiamos los arreglos actuales filasCorrectas y colsCorrectas a variables auxiliares
+  
+        let auxFilas = this.state.filasCorrectas.slice();
+        let auxCols = this.state.colsCorrectas.slice();
+        if (success) {
+          //usamos la respuesta de prolog para actualizar los arreglos auxiliares
+          auxFilas[i] = response['FilaSat'];
+          auxCols[j] = response['ColSat'];
+          
           this.setState({
-            won:true,
-            statusText: "Ganaste!!"
-          })
+            //uso la respuesta de prolog para actualizar el estado actual de la grilla y reemplazo los arreglos
+            //actuales de filasCorrectas y colsCorrectas por los arreglos auxiliares que ya modifique
+            grid: response['GrillaRes'],
+            waiting: false,
+            filasCorrectas:auxFilas,
+            colsCorrectas:auxCols
+          });
+  
+          //control por React de que ej jugador gano
+          //si todas las filas y todas las columnas son correctas gano el juego
+          let todasFilas = this.state.filasCorrectas.every(elem=> elem===1);
+          let todasCols = this.state.colsCorrectas.every(elem=> elem===1);
+  
+          if(todasFilas&&todasCols){
+            this.setState({
+              won:true,
+              statusText: "Ganaste!!"
+            })
+          }
+        }else {
+          this.setState({
+            waiting: false
+          });
         }
-      }else {
-        this.setState({
-          waiting: false
-        });
-      }
-    });
+      });
+    }
   }
 
   //funcion onClick para el componente Mode que alterna entre los 2 modos posibles (pintar o poner X)
@@ -150,16 +160,34 @@ class Game extends React.Component {
   }
 
 
-  getHint(i,j){
-    // Si esta esperando, o el jugador gano y no clickeo en reiniciar juego no hago nada.
-    if (this.state.waiting || this.state.won) {
-      return;
+  showHint(){
+    if (!this.state.help) {
+      this.setState({
+        help:true,
+        statusText:"Revelando"
+      });
+    }else{
+      this.setState({
+        help:false,
+        statusText:"Partida en curso."
+      });
     }
-    return this.state.solution[i][j];
+    
   }
   
   showSolution(){
-
+    if(!this.state.solve){
+      this.setState({
+        solve:true,
+        gridAux: this.state.grid.slice(),
+        grid:this.state.gridSolution
+      });
+    }else{
+      this.setState({
+        solve:false,
+        grid:this.state.gridAux
+      });
+    }
   }
 
   render() {
@@ -177,30 +205,25 @@ class Game extends React.Component {
           rowSat = {this.state.filasCorrectas}
           colSat = {this.state.colsCorrectas}
         />
+        <div className="modo">
+          Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
+        </div>
 
+        <div className="div">
+          {this.state.statusText}
+         </div>
+        
         <div className="bottom">
-            <div className="izq">
-              <div className="div modo">
-                Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
-              </div>
-
-              <div className="div">
-                {this.state.statusText}
-              </div>
-
-              <div className="div">
-                <Restart onClick={() => this.handlePengineCreate()} />
-              </div>
-            </div>
-            <div className="der">
-                <div>
-                  <Hint onClick={(i,j) => this.getHint(i,j)}/>
-                </div>
-                <div>
-                  <Solution onClick={() => this.showSolution()}/>
-                </div>
-            </div>
+          <div className="uno">
+            <Restart onClick={() => this.handlePengineCreate()} />
           </div>
+          <div className="dos">
+              <Hint onClick={(i,j) => this.showHint()}/>
+            </div>
+          <div className="tres">
+              <Solution onClick={() => this.showSolution()}/>
+          </div>
+        </div>
               
       </div>
     );

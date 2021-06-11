@@ -8,7 +8,6 @@ class Mode extends React.Component {
         }
         return (
             <button className={nombre} onClick={this.props.onClick}>
-                {this.props.value !== '#' ? 'X': ''}
             </button>
         );
     }
