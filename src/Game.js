@@ -23,9 +23,13 @@ class Game extends React.Component {
       colsCorrectas:[],
       statusText:null,
       gridSolution:null,
+      filasCorrectasSol:[],
+      colsCorrectasSol:[],
       help:false,
       solve:false,
       gridAux:null,
+      filasAux:[],
+      colsAux:[],
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -47,6 +51,15 @@ class Game extends React.Component {
       //llamamos al metodo auxiliar checkInicio que sirve para verificar si las celdas pintadas iniciales verifican alguna pista
       this.checkInicio();
       this.solveBoard();
+
+      this.state.grid.forEach(() => {
+        this.state.filasCorrectasSol.push(1);
+      });
+
+      this.state.grid[0].forEach(() => {
+        this.state.colsCorrectasSol.push(1);
+      });
+
       }
     });
   }
@@ -81,7 +94,7 @@ class Game extends React.Component {
       if (success){
         this.setState({
           gridSolution: response['GRes'],
-        })
+        });
       }  
     });
   }
@@ -179,13 +192,21 @@ class Game extends React.Component {
     if(!this.state.solve){
       this.setState({
         solve:true,
+        waiting:true,
         gridAux: this.state.grid.slice(),
-        grid:this.state.gridSolution
+        grid:this.state.gridSolution,
+        filasAux: this.state.filasCorrectas.slice(),
+        colsAux:this.state.colsCorrectas.slice(),
+        filasCorrectas: this.state.filasCorrectasSol,
+        colsCorrectas: this.state.colsCorrectasSol
       });
     }else{
       this.setState({
         solve:false,
-        grid:this.state.gridAux
+        waiting:false,
+        grid:this.state.gridAux,
+        filasCorrectas: this.state.filasAux,
+        colsCorrectas: this.state.colsAux
       });
     }
   }
