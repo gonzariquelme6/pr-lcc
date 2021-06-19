@@ -198,7 +198,8 @@ class Game extends React.Component {
         filasAux: this.state.filasCorrectas.slice(),
         colsAux:this.state.colsCorrectas.slice(),
         filasCorrectas: this.state.filasCorrectasSol,
-        colsCorrectas: this.state.colsCorrectasSol
+        colsCorrectas: this.state.colsCorrectasSol,
+        statusText: "Mostrando solucion."
       });
     }else{
       this.setState({
@@ -206,7 +207,8 @@ class Game extends React.Component {
         waiting:false,
         grid:this.state.gridAux,
         filasCorrectas: this.state.filasAux,
-        colsCorrectas: this.state.colsAux
+        colsCorrectas: this.state.colsAux,
+        statusText: "Partida en curso."
       });
     }
   }
